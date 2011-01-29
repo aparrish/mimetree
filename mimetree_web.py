@@ -25,6 +25,7 @@ import tornado.web
 
 import urllib
 import json
+import redis
 import bsoup_parse
 
 from BeautifulSoup import BeautifulStoneSoup
@@ -34,6 +35,8 @@ from tornado.options import define, options
 define("port", default=8888, help="run on the given port", type=int)
 define("facebook_api_key", help="your Facebook application API key")
 define("facebook_secret", help="your Facebook application secret")
+define("redis_host", help="hostname for redis", default="localhost", type=str)
+define("redis_port", help="port number for redis", default=6379, type=int)
 
 class Application(tornado.web.Application):
 	def __init__(self):
@@ -70,17 +73,31 @@ class FriendsJSONHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.authenticated
 	@tornado.web.asynchronous
 	def get(self):
-		http = tornado.httpclient.AsyncHTTPClient()
-		http.fetch('https://api.facebook.com/method/fql.query?' + \
-			urllib.urlencode({'access_token': self.current_user['access_token'],
-				'query': 'select uid, first_name, last_name, name, religion, sex, hometown_location, political, current_location, activities, interests, music, tv, movies, books, work_history, education_history from user where uid in (select uid2 from friend where uid1 = me())'}),
-			callback=self._on_response)
+		self.set_header('Content-Type', 'application/json')
+		r = redis.Redis(host=options.redis_host, port=options.redis_port, db=0)
+		key = "%s:friends" % (self.current_user['access_token'])
+		data = r.get(key)
+		if data:
+			logging.info('got data from cache')
+			self.write(data)
+			self.finish()
+		else:
+			logging.info('cache miss')
+			http = tornado.httpclient.AsyncHTTPClient()
+			http.fetch('https://api.facebook.com/method/fql.query?' + \
+				urllib.urlencode({'access_token': self.current_user['access_token'],
+					'query': 'select uid, first_name, last_name, name, religion, sex, hometown_location, political, current_location, activities, interests, music, tv, movies, books, work_history, education_history from user where uid in (select uid2 from friend where uid1 = me())'}),
+				callback=self._on_response)
 
 	def _on_response(self, response):
 		logging.error("response %s" % str(response))
 		if response.error: raise tornado.web.HTTPError(500)
 		soup = BeautifulStoneSoup(response.body)
-		self.write(json.dumps(bsoup_parse.parse_soup(soup)))
+		rawjson = json.dumps(bsoup_parse.parse_soup(soup))
+		self.write(rawjson)
+		logging.error('setting cache key')
+		r = redis.Redis(host=options.redis_host, port=options.redis_port, db=0)
+		r.setex("%s:friends" % self.current_user['access_token'], rawjson, 86400)
 		#logging.error(response.body)
 		self.finish()
 
