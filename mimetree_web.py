@@ -86,7 +86,7 @@ class FriendsJSONHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 			http = tornado.httpclient.AsyncHTTPClient()
 			http.fetch('https://api.facebook.com/method/fql.query?' + \
 				urllib.urlencode({'access_token': self.current_user['access_token'],
-					'query': 'select uid, first_name, last_name, name, religion, sex, hometown_location, political, current_location, activities, interests, music, tv, movies, books, work_history, education_history from user where uid in (select uid2 from friend where uid1 = me())'}),
+					'query': 'select uid, first_name, last_name, sex, current_location, activities, interests, music, tv, movies, books, work_history, education_history from user where uid in (select uid2 from friend where uid1 = me()) order by rand() limit 200'}),
 				callback=self._on_response, request_timeout=120.0)
 
 	def _on_response(self, response):
