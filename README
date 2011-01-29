@@ -1,9 +1,21 @@
+OUR GLOBAL GAME JAM GAME
+IT IS A FACEBOOK GAME WHERE YOU MATE YOUR FRIENDS
+
 to run:
 
-- register a facebook application at http://apps.facebook.com/developers; put it in sandbox mode; note the api key and secret
+- register a facebook application at http://apps.facebook.com/developers; put
+  it in sandbox mode; note the api key and secret
 - at the command-line:
-  python mimetree_web.py --facebook_api_key=<your facebook api key> --facebook_secret=<your facebook secret> --port=<port to run server on>
+		python mimetree_web.py --facebook_api_key=<your facebook api key> \
+			--facebook_secret=<your facebook secret> \
+			--port=<port to run server on>
 - choose a port somewhere in the 8900-8999 range
-- the html template for the root is in templates/index.html (note the way that static files are included)
+- the html template for the root is in templates/index.html (note the way that
+  static files are included)
 - javascript and css go in the static dir
+
+you will also need to have redis installed somewhere handy. (we use redis to
+cache facebook data.) the program runs with sensible defaults, but you can
+override the redis host and port with the --redis_host and --redis_port
+parameters.
 
