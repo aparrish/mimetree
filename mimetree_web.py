@@ -22,9 +22,12 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-import uimodules
 
 import urllib
+import json
+import bsoup_parse
+
+from BeautifulSoup import BeautifulStoneSoup
 
 from tornado.options import define, options
 
@@ -76,7 +79,8 @@ class FriendsJSONHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	def _on_response(self, response):
 		logging.error("response %s" % str(response))
 		if response.error: raise tornado.web.HTTPError(500)
-		self.write(response.body)
+		soup = BeautifulStoneSoup(response.body)
+		self.write(json.dumps(bsoup_parse.parse_soup(soup)))
 		#logging.error(response.body)
 		self.finish()
 
