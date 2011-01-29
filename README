@@ -1,0 +1,9 @@
+to run:
+
+- register a facebook application at http://apps.facebook.com/developers; put it in sandbox mode; note the api key and secret
+- at the command-line:
+  python mimetree_web.py --facebook_api_key=<your facebook api key> --facebook_secret=<your facebook secret> --port=<port to run server on>
+- choose a port somewhere in the 8900-8999 range
+- the html template for the root is in templates/index.html (note the way that static files are included)
+- javascript and css go in the static dir
+
