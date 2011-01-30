@@ -8,13 +8,18 @@ body {
 	magin:0;
 	padding:0;
 	color:white;
-	font-family:Calibri, Courier, monospace;
+	font-family:'Lato', Calibri, Courier, monospace;
+	font-size:13px;
 }
 
 img {
 	border:none;
 }
 
+a {
+	text-decoration:none;
+	color:white;
+}
 fieldset {
 	border:none;
 }
