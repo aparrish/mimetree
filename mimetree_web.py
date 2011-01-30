@@ -238,9 +238,10 @@ class FriendsJSONHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 		data = self.get_graph_data()
 		if data is None:
 			# couldn't get json, probably auth problem
-			self.redirect('/auth/login')
-		self.set_header('Content-Type', 'application/json')
-		self.write(json.dumps(data))
+			self.write(json.dumps({}))
+		else:
+			self.set_header('Content-Type', 'application/json')
+			self.write(json.dumps(data))
 
 class AuthLoginHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.asynchronous
