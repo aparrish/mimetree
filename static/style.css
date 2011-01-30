@@ -1,0 +1,191 @@
+* {
+	margin:0;
+	padding:0;
+}
+
+body {
+	background:#fff url(../static/images/background.jpg);
+	magin:0;
+	padding:0;
+	color:white;
+	font-family:Calibri, Courier, monospace;
+}
+
+img {
+	border:none;
+}
+
+fieldset {
+	border:none;
+}
+
+#content {
+	width:1000px;
+	margin: 0 auto;
+	border:none;
+}
+
+#matchButton {
+	float:left;
+	width:223px;
+	margin-left:105px;
+	padding-top:10px;
+	padding-bottom:25px;
+}
+
+#centerCont {
+	width:650px;
+	float:right;
+	padding-top:75px;
+}
+
+table {
+	/* margin:0 auto;*/
+}
+
+td {
+	padding:0 3px 0 3px;
+}
+
+.hr_grey {
+	border-top:none;
+    border-left:none;
+    border-right:none;
+    border-bottom:1px solid #ccc;
+}
+
+#leftCol {
+	width:240px;
+	margin:0;
+}
+
+#rightCol{
+	width:710px;
+	margin:0;
+}
+
+.DragContainer, .OverDragContainer {
+  float: left;
+  margin: 3px;
+  width: 240px;
+  padding: 5px;
+  padding-top:10px;
+}
+
+.DropContainer {
+	width:100px;
+	height:100px;
+	background: #000 url(../static/images/frame.png);
+}
+
+.BabyContainer {
+	width:198px;
+	height:198px;
+	margin-right:10px;
+	float:left;
+	padding: 6px 0 0 6px;
+	background: #000 url(../static/images/frame3.png);
+	margin-top:0px;
+}
+
+.BabyData {
+	width:430px;
+	float:left;
+}
+
+#BabyName {
+	font-weight:bold;
+	font-size:20px;
+	line-height:80%;
+	text-align:center;
+}
+
+#BabyDesc {
+	padding-left:3px;
+	background: url(../static/images/bg1.png);
+}
+
+.InfoContainer {
+	width: 200px;
+	padding:5px;
+}
+
+.DragBox, .OverDragBox, .DragDragBox, .miniDragBox {
+  border: #000 1px solid;
+  padding: 4px;
+  font-size: 10px;
+  margin-bottom: 5px;
+  width: 55px;
+  cursor: pointer;
+  font-family: verdana, tahoma, arial;
+  background: #ff66aa url(../static/images/frame2.png);
+  display:inline-block;
+  margin-left:4px;
+}
+
+.OverDragContainer {
+	background: #eee;
+}
+
+.OverDragBox, .DragDragBox {
+  background: #ffff99  url(../static/images/frame2.png);
+}
+
+.DragDragBox {
+  filter: alpha(opacity=50);
+  background-color: #012593;
+}
+
+fieldset {
+  padding: 3px;
+}
+
+#DragContainer2, #DragContainer3 {
+	padding-left:14px;
+	padding-top:15px;
+	width:86px;
+	height:85px;	
+}
+
+#DragContainer8 {
+  border: #669999 1px solid;
+  padding: 5px 0 0 5px
+  width: 110px;
+  height: 40px;
+}
+
+.miniDragBox {
+  float: left;
+  margin: 0 5px 5px 0;
+  width: 20px;
+  height: 20px;
+}
+
+.name {
+	width:48%;
+}
+
+.name p{
+	text-align:center;
+	font-weight:bold;
+	font-size:20px;
+	line-height:80%;
+}
+
+.clear {
+	clear:both;
+}
+
+.right {
+	float: right;
+	margin:3px;
+}
+
+.left {
+	float: left;
+	margin:3px;
+}
+
+.miniPadding {
+	padding:10px;
+}
