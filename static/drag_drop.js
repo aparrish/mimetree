@@ -561,6 +561,10 @@ window.onload = function(){
 			//console.log(data);
 			userData = data;
 			
+			if(data==undefined || data==null || jQuery.isEmptyObject( data )){
+				window.location = "/auth/login";
+			}
+			
 			var i=1;
 			for (var key in data) { 
 				//alert("hi22");   
