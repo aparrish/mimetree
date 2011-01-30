@@ -211,7 +211,8 @@ def layer_images_for_baby(baby):
 	else:
 		images.append('2_Enthusiasm_FACE/high/%s.png' % baby['sex'])
 
-	images.append('1_Proficiency_FG/hand.png')
+	if baby['stats']['proficiency'] != 'meditation':
+		images.append('1_Proficiency_FG/hand.png')
 	images.append('1_Proficiency_FG/%s.png' % (baby['stats']['proficiency'].lower()))
 
 	return [image_base_url + path for path in images]
@@ -267,7 +268,7 @@ class AuthLoginHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 			return
 		self.authorize_redirect(redirect_uri=redirect_uri,
 			client_id=self.settings["facebook_api_key"],
-			extra_params={"scope": "user_about_me,user_education_history,user_location,email,friends_about_me,friends_activities,friends_birthday,friends_education_history,friends_events,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location,friends_relationships,friends_relationship_details,friends_religion_politics,friends_status,friends_website,friends_work_history,user_about_me,user_activities,user_birthday,user_education_history,user_events,user_groups,user_hometown,user_interests,user_likes,user_location,user_relationships,user_relationship_details,user_religion_politics,user_status,user_website,user_work_history"})
+			extra_params={"scope": "user_about_me,user_education_history,user_location,friends_about_me,friends_activities,friends_education_history,friends_hometown,friends_interests,friends_likes,friends_location,friends_religion_politics,friends_status,friends_website,friends_work_history,user_about_me,user_activities,user_education_history,user_hometown,user_interests,user_likes,user_location,user_religion_politics,user_status,user_work_history"})
 
 	def _on_login(self, user):
 		logging.error(user)
