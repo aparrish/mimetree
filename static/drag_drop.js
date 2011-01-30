@@ -476,6 +476,14 @@ function fornicate(){
 					dataString+='</table>';
 			$(dataString).appendTo("#BabyStats");
 			
+			$("#BabyContainer").empty();
+			var images = data["images"];
+			dataString = '';
+			for(var j=images.length-1;j>=0;j--){
+				var ind = j+1;
+				dataString += '<img src="'+images[j]+'" style="z-index:'+ind+'">';
+			}
+			$(dataString).appendTo("#BabyContainer");
 		});
 	}
 	

@@ -78,7 +78,7 @@ td {
 	background: #000 url(../static/images/frame.png);
 }
 
-.BabyContainer {
+#BabyContainer {
 	width:198px;
 	height:198px;
 	margin-right:10px;
@@ -87,6 +87,10 @@ td {
 	background: #000 url(../static/images/frame3.png);
 	margin-top:0px;
 }
+
+#BabyContainer img {
+  position: absolute;
+} 
 
 .BabyData {
 	width:430px;
