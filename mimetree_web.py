@@ -162,6 +162,7 @@ class BreedHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 			r = self.get_redis_conn()
 			r.set("%s:baby:%s" % (self.current_user['id'], baby_id), json.dumps(baby_data))
 			r.lpush("%s:baby_ids" % (self.current_user['id']), baby_id)
+			r.ltrim("%s:baby_ids" % (self.current_user['id']), 0, 99)
 			self.set_header('Content-Type', 'application/json')
 			self.write(json.dumps(baby_data))
 		else:
