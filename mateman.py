@@ -241,6 +241,8 @@ def crunchNumbers(users):
 			userEduCount = len(users[user]['education_history'])
 		else: 
 			userEduCount = 0
+		
+		#print users[user]['last_name']
 					
 		interestCounts.append(userInterestCount)
 		activityCounts.append(userActivityCount)
@@ -326,7 +328,101 @@ def dictMeld (parent1, parent2, attribute):
 					babyStats[key] = parent2[attribute][key]
 	
 	return babyStats
-				
+
+def findSimilarity(baby, parent):
+	
+	options = [k for k in baby.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies') and baby[k] and k in parent.keys() and parent[k]]
+
+	random.shuffle(options)
+	
+	foundIt = -1
+	
+	if (len(options) == 0):
+		return -1
+	
+	while (foundIt == -1):		
+		category = options.pop()
+		candidates = [c for c in baby[category] if c in parent[category]]
+		if (len(candidates) > 0):
+			result = [category, random.choice(candidates)]
+			return result
+		else:
+			if (len(options) == 0) or (len(candidates) == 0):
+				return -1
+	
+	return
+	
+def findDifference(baby, parent):
+	
+	options = [k for k in parent.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies') and parent[k]]
+
+	random.shuffle(options)
+	
+	foundIt = -1
+	
+	if (len(options) == 0):
+		return -1
+	
+	while (foundIt == -1):		
+		category = options.pop()
+		candidates = [c for c in parent[category] if baby[category] and c not in baby[category]]
+		if (len(candidates) > 0):
+			result = [category, random.choice(candidates)]
+			return result
+		else:
+			if (len(options) == 0) or (len(candidates) == 0):
+				return -1
+	
+	return
+			
+	
+
+def assessBaby(babyStats):
+	
+	descriptors = {'enthusiasm': [['en_low_1', 'en_low_2', 'en_low_3', 'en_low_4', 'en_low_5'],
+			['en_med_1', 'en_med_2', 'en_med_3', 'en_med_4', 'en_med_5'],
+			['en_hi_1', 'en_hi_2', 'en_hi_3', 'en_hi_4', 'en_hi_5']],
+		'intrigue': [['in_low_1', 'in_low_2', 'in_low_3', 'in_low_4', 'in_low_5'],
+			['in_med_1', 'in_med_2', 'in_med_3', 'in_med_4', 'in_med_5'],
+			['in_hi_1', 'in_hi_2', 'in_hi_3', 'in_hi_4', 'in_hi_5']],
+		'literacy': [['li_low_1', 'li_low_2', 'li_low_3', 'li_low_4', 'li_low_5'],
+			['li_med_1', 'li_med_2', 'li_med_3', 'li_med_4', 'li_med_5'],
+			['li_hi_1', 'li_hi_2', 'li_hi_3', 'li_hi_4', 'li_hi_5']],
+		'usefulness': [['us_low_1', 'us_low_2', 'us_low_3', 'us_low_4', 'us_low_5'],
+			['us_med_1', 'us_med_2', 'us_med_3', 'us_med_4', 'us_med_5'],
+			['us_hi_1', 'us_hi_2', 'us_hi_3', 'us_hi_4', 'us_hi_5']],
+		'privacy': [['pr_low_1', 'pr_low_2', 'pr_low_3', 'pr_low_4', 'pr_low_5'],
+			['pr_med_1', 'pr_med_2', 'pr_med_3', 'pr_med_4', 'pr_med_5'],
+			['pr_hi_1', 'pr_hi_2', 'pr_hi_3', 'pr_hi_4', 'pr_hi_5']]}
+	
+	stat = random.choice(descriptors.keys())
+		
+	if not (stat == 'proficiency'):
+		if (babyStats[stat] < 9):
+			if (stat == 'privacy'):
+				check = [2]
+			else:
+				check = [0]
+			check.append(random.choice(descriptors[stat][0]))
+			return check
+		elif (babyStats[stat] < 14):
+			check = [1]
+			check.append(random.choice(descriptors[stat][1]))
+			return check
+		else:
+			if (stat == 'privacy'):
+				check = [0]
+			else:
+				check = [2]
+			check.append(random.choice(descriptors[stat][2]))
+			return check	
+	else:
+		return -1
+	
+	
+	
+	
+					
 
 def makeBaby(parent1, parent2):
 	pprint.pprint(parent1)
@@ -361,6 +457,65 @@ def makeBaby(parent1, parent2):
 	
 	return baby
 
+def getName(baby):
+	return baby['first_name'] + " " + baby['last_name']
+
+
+def getBio(baby, parent1, parent2):
+	
+	madLib = {'impression': '',
+			'parentAdj': ''}
+	
+	#intro sentence templates
+	introTemplates = ["%(baby)s would be the %(impression)s child of %(p1)s and %(p2)s. ", 
+					"The %(parentAdj)s union of %(p1)s and %(p2)s would result in the birth of %(baby)s."]
+	
+	
+	
+	bio = ""
+	
+	getName(parent1)
+	
+	bio = bio + getName(baby) + " is the child of proud parents " + getName(parent1) + " and " + getName(parent2) + ". "	
+	
+	if (random.randint(0,1)):
+		check = findSimilarity(baby, parent1)
+		if (check == -1):
+			bio += baby['first_name'] + " and " + parent1['first_name'] + " have nothing in common. "
+		else:
+			bio += "When it comes to " + check[0] + ", " + baby['first_name'] + " and " + parent1['first_name'] + " share a love of " + check[1] + ". "
+	else:
+		check = findDifference(baby, parent1)
+		if (check == -1):
+			bio += baby['first_name'] + " wishes " + parent1['first_name'] + " had at least one characteristic to rebel against. "
+		else:
+			bio += baby['first_name'] + " rejects " + parent1['first_name'] + "'s lame affection for " + check[1] + ". "
+
+	if (random.randint(0,1)):
+		check = findSimilarity(baby, parent2)
+		if (check == -1):
+			bio += baby['first_name'] + " and " + parent2['first_name'] + " have nothing in common. "
+		else:
+			bio += "When it comes to " + check[0] + ", " + baby['first_name'] + " and " + parent2['first_name'] + " share a love of " + check[1] + ". "
+	else:
+		check = findDifference(baby, parent2)
+		if (check == -1):
+			bio += baby['first_name'] + " wishes " + parent2['first_name'] + " had at least one characteristic to rebel against. "
+		else:
+			bio += baby['first_name'] + " rejects " + parent2['first_name'] + "'s lame affection for " + check[1] + ". "
+	
+	bio += "Baby is " + assessBaby(baby['stats'])[1] + " and " + assessBaby(baby['stats'])[1] + ". "
+	
+	if (random.randint(0,1000000) == 999999):
+		bio += "It's a miracle! Baby is genetically immune to the space fungus!"
+	else:
+		bio += "It should come as no surprise that " + baby['first_name'] + " is not genetically immune to the space fungus."
+	
+	return bio
+	
+	
+	
+	
 
 if __name__ == '__main__':
 
@@ -380,25 +535,13 @@ if __name__ == '__main__':
 	
 	baby = makeBaby(users[genepool[parent1]], users[genepool[parent2]])
 	
-	
 	graphStats = crunchNumbers(users)
 	
-	pprint.pprint(baby)
-	print
-	pprint.pprint(getStats(baby, graphStats))
+	baby['stats'] = getStats(baby, graphStats)
+	users[genepool[parent1]]['stats'] = getStats(users[genepool[parent1]], graphStats)
+	users[genepool[parent2]]['stats'] = getStats(users[genepool[parent2]], graphStats)	
 	
-	
-	#pprint.pprint(graphStats)
-	
-	
-	
-	#for user in users:
-	#	print users[user]['first_name'] + " " + users[user]['last_name'] + ": "
-	#	pprint.pprint(getStats(users[user], graphStats))
-	#	print
-	
-	
-	
+	print getBio(baby, users[genepool[parent1]], users[genepool[parent2]])
 	
 	
 	
