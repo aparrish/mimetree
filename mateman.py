@@ -799,7 +799,7 @@ def getBio(baby, parent1, parent2):
 			templates = ["It should come as no surprise that %(baby)s would not be genetically immune to the space fungus.",
 				"In addition to being an emotional drain on %(babyHisHer)s family, %(baby)s would not be genetically immune to the space fungus."]
 		else:
-			templates = ["Though %(baby)s would a credit to %(babyHisHer)s family, %(babyPronoun)s would not be genetically immune to the space fungus."]
+			templates = ["Though %(baby)s would be a credit to %(babyHisHer)s family, %(babyPronoun)s would not be genetically immune to the space fungus."]
 		
 		summaryDict = {'baby': random.choice([baby['first_name'], "this child"]),
 			'babyHisHer': getPossessive(baby),
