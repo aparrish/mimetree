@@ -470,7 +470,7 @@ function fornicate(){
 					dataString += '<tr><td><strong>Proficiency</strong></td><td>'+data["baby"]["stats"]["proficiency"]+'</td></tr>';
 					dataString += '<tr><td><strong>Enthusiasm</strong></td><td>'+data["baby"]["stats"]["enthusiasm"]+'</td></tr>';
 					dataString += '<tr><td><strong>Usefulness</strong></td><td>'+data["baby"]["stats"]["usefulness"]+'</td></tr>';
-					dataString += '<tr><td><strong>Intrugue</strong></td><td>'+data["baby"]["stats"]["intrigue"]+'</td></tr>';
+					dataString += '<tr><td><strong>Intrigue</strong></td><td>'+data["baby"]["stats"]["intrigue"]+'</td></tr>';
 					dataString += '<tr><td><strong>Literacy</strong></td><td>'+data["baby"]["stats"]["literacy"]+'</td></tr>';
 					dataString += '<tr><td><strong>Privacy</strong></td><td>'+data["baby"]["stats"]["privacy"]+'</td></tr>';
 					dataString+='</table>';
@@ -500,7 +500,7 @@ function updateStats(uID,fullName,infoNum){
 					dataString += '<tr><td><strong>Proficiency</strong></td><td>'+data["proficiency"]+'</td></tr>';
 					dataString += '<tr><td><strong>Enthusiasm</strong></td><td>'+data["enthusiasm"]+'</td></tr>';
 					dataString += '<tr><td><strong>Usefulness</strong></td><td>'+data["usefulness"]+'</td></tr>';
-					dataString += '<tr><td><strong>Intrugue</strong></td><td>'+data["intrigue"]+'</td></tr>';
+					dataString += '<tr><td><strong>Intrigue</strong></td><td>'+data["intrigue"]+'</td></tr>';
 					dataString += '<tr><td><strong>Literacy</strong></td><td>'+data["literacy"]+'</td></tr>';
 					dataString += '<tr><td><strong>Privacy</strong></td><td>'+data["privacy"]+'</td></tr>';
 					dataString+='</table>';
