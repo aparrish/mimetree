@@ -151,7 +151,7 @@ class BreedHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 			parent2_with_stats = dict(friends[parent2_uid], **parent2_stats)
 			bio = mateman.getBio(baby, parent1_with_stats, parent2_with_stats)
 			baby_id = str(uuid.uuid4())
-			baby_data = {'id': baby_id, 'baby': baby, 'bio': bio}
+			baby_data = {'id': baby_id, 'baby': baby, 'bio': bio, 'images': layer_images_for_baby(baby)}
 			r = self.get_redis_conn()
 			r.set("%s:baby:%s" % (self.current_user['id'], baby_id), json.dumps(baby_data))
 			r.lpush("%s:baby_ids" % (self.current_user['id']), baby_id)
@@ -159,6 +159,55 @@ class BreedHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 			self.write(json.dumps(baby_data))
 		else:
 			raise tornado.web.HTTPError(400)
+
+def layer_images_for_baby(baby):
+	image_base_url = 'http://s3.amazonaws.com/lastbabystanding/avatar_pieces/'
+	images = list()
+
+	# privacy
+	if baby['stats']['privacy'] < 9:
+		images.append('6_Privacy_R_BG/privacyLow.png')
+	elif baby['stats']['privacy'] < 14:
+		images.append('6_Privacy_R_BG/privacyMedium.png')
+	else:
+		images.append('6_Privacy_R_BG/privacyHigh.png')
+
+	# literacy
+	if baby['stats']['literacy'] < 9:
+		images.append('5_Literacy_L_BG/literacyLow.png')
+	elif baby['stats']['literacy'] < 14:
+		images.append('5_Literacy_L_BG/literacyMedium.png')
+	else:
+		images.append('5_Literacy_L_BG/literacyHigh.png')
+
+	# usefulness
+	if baby['stats']['usefulness'] < 9:
+		images.append('4_Usefulness_BODY/bodyLow.png')
+	elif baby['stats']['usefulness'] < 14:
+		images.append('4_Usefulness_BODY/bodyMedium.png')
+	else:
+		images.append('4_Usefulness_BODY/bodyMedium.png')
+
+	# intrigue
+	if baby['stats']['intrigue'] < 9:
+		images.append('3_Intrigue_HAIR/low/%s.png' % baby['sex'])
+	elif baby['stats']['intrigue'] < 14:
+		images.append('3_Intrigue_HAIR/medium/%s.png' % baby['sex'])
+	else:
+		images.append('3_Intrigue_HAIR/high/%s.png' % baby['sex'])
+
+	# enthusiasm (sic)
+	if baby['stats']['enthusiasm'] < 9:
+		images.append('2_Enthusiasm _FACE/low/%s.png' % baby['sex'])
+	elif baby['stats']['enthusiasm'] < 14:
+		images.append('2_Enthusiasm _FACE/medium/%s.png' % baby['sex'])
+	else:
+		images.append('2_Enthusiasm _FACE/high/%s.png' % baby['sex'])
+
+	images.append('1_Proficiency_FG/hand.png')
+	images.append('1_Proficiency_FG/%s.png' % (baby['stats']['proficiency'].lower()))
+
+	return [image_base_url + path for path in images]
 
 class BabyHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.authenticated
