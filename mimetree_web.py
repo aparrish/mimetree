@@ -106,13 +106,13 @@ class AuthLoginHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	def get(self):
 		if self.get_argument("code", False):
 			self.get_authenticated_user(
-				redirect_uri='http://resolution.decontextualize.com:8888/auth/login',
+				redirect_uri='http://resolution.decontextualize.com:%d/auth/login' % options.port,
 				client_id=self.settings["facebook_api_key"],
 				client_secret=self.settings["facebook_secret"],
 				code=self.get_argument("code"),
 				callback=self.async_callback(self._on_login))
 			return
-		self.authorize_redirect(redirect_uri='http://resolution.decontextualize.com:8888/auth/login',
+		self.authorize_redirect(redirect_uri='http://resolution.decontextualize.com:%d/auth/login' % options.port,
 			client_id=self.settings["facebook_api_key"],
 			extra_params={"scope": "user_about_me,user_education_history,user_location,email,friends_about_me,friends_activities,friends_birthday,friends_education_history,friends_events,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location,friends_relationships,friends_relationship_details,friends_religion_politics,friends_status,friends_website,friends_work_history,user_about_me,user_activities,user_birthday,user_education_history,user_events,user_groups,user_hometown,user_interests,user_likes,user_location,user_relationships,user_relationship_details,user_religion_politics,user_status,user_website,user_work_history"})
 
