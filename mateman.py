@@ -332,7 +332,7 @@ def dictMeld (parent1, parent2, attribute):
 
 def findSimilarity(baby, parent):
 	
-	options = [k for k in baby.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies', 'work_history', 'education_history') and baby[k] and k in parent.keys() and parent[k]]
+	options = [k for k in baby.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies', 'work_history', 'education_history') and baby[k] and k in parent.keys()]
 
 	random.shuffle(options)
 	
@@ -343,6 +343,7 @@ def findSimilarity(baby, parent):
 	
 	while (foundIt == -1):		
 		category = options.pop()
+
 		
 		if (category == 'education_history'):
 			candidates = [c for c in baby[category].keys() if c in parent[category].keys()]
@@ -376,6 +377,8 @@ def findDifference(baby, parent):
 	
 	while (foundIt == -1):		
 		category = options.pop()
+		if (category == 'work_history'):
+			print "workhist?"
 		candidates = [c for c in parent[category] if baby[category] and c not in baby[category]]
 		if (len(candidates) > 0):
 			result = [category, random.choice(candidates)]
@@ -391,22 +394,23 @@ def findDifference(baby, parent):
 			
 	
 
-def assessBaby(babyStats):
+def assessBaby(babyStats, stat = ""):
 	
 	descriptors = {'enthusiasm': [['apathetic', 'disinterested', 'indifferent', 'lethargic', 'lazy'],
-			['outgoing', 'ardent', 'exuberant', 'spirited', 'ebullient']],
+			['outgoing', 'ardent', 'exuberant', 'spirited', 'ebullient', 'enthusiastic']],
 		'intrigue': [['boring', 'dull', 'uninteresting', 'wearisome', 'tedious'],
-			['captivating', 'enchanting', 'fascinating', 'compelling', 'magnetic']],
+			['captivating', 'enchanting', 'fascinating', 'compelling', 'magnetic', 'intriguing']],
 		'literacy': [['ignorant', 'cretinous', 'moronic', 'imbecilic', 'oblivious'],
-			['erudite', 'well-read', 'cultured', 'scholarly', 'sophisticated']],
+			['erudite', 'well-read', 'cultured', 'scholarly', 'sophisticated', 'literate']],
 		'usefulness': [['clumsy', 'incompetent', 'unskilled', 'ponderous', 'bungling'],
-			['capable', 'skillful', 'well-qualified', 'proficient', 'accomplished']],
+			['capable', 'skillful', 'well-qualified', 'proficient', 'accomplished', 'useful']],
 		'privacy': [['forthright', 'honest', 'open', 'aboveboard', 'trusting'],
-			['secretive', 'furtive', 'reticent', 'cryptic', 'withdrawn']]}
+			['secretive', 'furtive', 'reticent', 'cryptic', 'withdrawn', 'private']]}
 	
 	middlers = ['middlingly', 'just-shy-of-', 'nearly ', 'almost-', 'in-the-ballpark-of-', 'practically ', 'virtually ', 'within-shouting-distance-of-', 'approaching ', 'not-quite-']
 	
-	stat = random.choice(descriptors.keys())
+	if not (stat):
+		stat = random.choice(descriptors.keys())
 		
 	if not (stat == 'proficiency'):
 		if (babyStats[stat] < 9):
@@ -474,51 +478,207 @@ def makeBaby(parent1, parent2):
 def getName(baby):
 	return baby['first_name'] + " " + baby['last_name']
 
+def getGenderNoun(baby):
+	if (baby['sex'] == 'male'):
+		return 'boy'
+	elif (baby['sex'] == 'female'):
+		return 'girl'
+	else:
+		return 'unshared'
+
+def getPossessive(baby):
+	if (baby['sex'] == 'male'):
+		return 'his'
+	else:
+		return 'her'
+		
+def getHimHerIt(baby):
+	if (baby['sex'] == 'male'):
+		return 'him'
+	elif (baby['sex'] == 'female'):
+		return 'her'
+	else:
+		return 'them'
+
+		
+def getPronoun(baby):
+	if (baby['sex'] == 'male'):
+		return 'he'
+	else:
+		return 'she'
+		
+def getNameOrRel(baby, parent):
+	if (parent['sex'] == ""):
+		return parent['first_name']
+	else:		
+		if (random.randint(0,1)):
+			if (parent['sex'] == 'male'):
+				rel = "father"
+			else:
+				rel = "mother"
+			return getPossessive(baby) + " " + rel
+		else:
+			return parent['first_name']
+
+def statCompare(baby, parent, stat):
+	return baby['stats'][stat] - parent['stats'][stat]	
 
 def getBio(baby, parent1, parent2):
 	
-	madLib = {'impression': '',
-			'parentAdj': ''}
+	
+	introMadLib = {'impression': assessBaby(baby['stats'])[1],
+			'parentAdj': random.choice(['passionate', 'long-overdue', 'highly anticipated', 'loveless', 'pragmatic', 'workmanlike', 'alienating', 'much-envied']),
+			'p1': (parent1['first_name'] + " " + parent1['last_name']),
+			'p2': (parent2['first_name'] + " " + parent2['last_name']),
+			'p1stat': assessBaby(parent1['stats'])[1],
+			'p2stat': assessBaby(parent2['stats'])[1],
+			'baby': (baby['first_name'] + " " + baby['last_name']),
+			'babyGender': getGenderNoun(baby),
+			'introClause': random.choice(['After a long courtship', 'Inevitably', 'Eventually', 'In due time', 'Soon after marriage', 'In a town scandal', 'After trying for years', 'Sooner than you\'d think']),
+			'birthVerb': random.choice(['conceive', 'welcome', 'birth'])}
 	
 	#intro sentence templates
-	introTemplates = ["%(baby)s would be the %(impression)s child of %(p1)s and %(p2)s. ", 
-					"The %(parentAdj)s union of %(p1)s and %(p2)s would result in the birth of %(baby)s."]
-	
-	
+	introTemplates = ["%(baby)s would be the %(impression)s child of %(p1)s and %(p2)s", 
+					"The %(parentAdj)s union of %(p1)s and %(p2)s would result in the birth of %(baby)s",
+					"%(introClause)s, the %(p1stat)s %(p1)s and the %(p2stat)s %(p2)s would %(birthVerb)s a child: the %(impression)s %(baby)s",
+					"Speculative congratulations to %(p1)s and %(p2)s on the birth of their hypothetical baby %(babyGender)s, %(baby)s"]
 	
 	bio = ""
 	
-	getName(parent1)
+	introSentence = random.choice(introTemplates) % introMadLib
 	
-	bio = bio + getName(baby) + " is the child of proud parents " + getName(parent1) + " and " + getName(parent2) + ". "	
+	bio += introSentence
 	
-	if (random.randint(0,1)):
-		check = findSimilarity(baby, parent1)
-		if (check == -1):
-			bio += baby['first_name'] + " and " + parent1['first_name'] + " have nothing in common. "
-		else:
-			bio += "When it comes to " + check[0] + ", " + baby['first_name'] + " and " + parent1['first_name'] + " share a love of " + check[1] + ". "
-	else:
-		check = findDifference(baby, parent1)
-		if (check == -1):
-			bio += baby['first_name'] + " wishes " + parent1['first_name'] + " had at least one characteristic to rebel against. "
-		else:
-			bio += baby['first_name'] + " rejects " + parent1['first_name'] + "'s lame affection for " + check[1] + ". "
+	bio += ". "
+	
+	# relationship builder
+	
+	options = [['likeSimilarity', 'likeDifference', 'statComparison', 'profSimilarity', 'profDifference'], 
+		['likeSimilarity', 'likeDifference', 'statComparison', 'profSimilarity', 'profDifference']]
+		
+	statComparisonTemplates = []
+		
+	profSimilarityTemplates = []
+	
+	profDifferenceTemplates = []
+	
+	clauseTotalCount = 0
+	clauseMax = 3
+	clauseParent = [0, 0]
+	clausePrev = ''
+	clauseValence = ''
+	clausePrevValence = ''
+	clauseCurrentLength = 0
+	
+	relParent = [parent1, parent2]
+	
+	valenceSame = ['and']
+	valenceDiff = ['though', 'but', 'however,']
+		
+	likeSimilarityTemplates = ["When it comes to %(genre)s, %(babyFirst)s and %(parentNameOrRel)s would share %(appreciation)s %(specific)s"]
+	
+	likeDifferenceTemplates = ["%(babyFirst)s would %(rejectVerb)s %(parentNameOrRel)s's %(rejectAdj)s %(appreciation)s %(specific)s"]
 
-	if (random.randint(0,1)):
-		check = findSimilarity(baby, parent2)
-		if (check == -1):
-			bio += baby['first_name'] + " and " + parent2['first_name'] + " have nothing in common. "
-		else:
-			bio += "When it comes to " + check[0] + ", " + baby['first_name'] + " and " + parent2['first_name'] + " share a love of " + check[1] + ". "
-	else:
-		check = findDifference(baby, parent2)
-		if (check == -1):
-			bio += baby['first_name'] + " wishes " + parent2['first_name'] + " had at least one characteristic to rebel against. "
-		else:
-			bio += baby['first_name'] + " rejects " + parent2['first_name'] + "'s lame affection for " + check[1] + ". "
 	
-	bio += "Baby is " + assessBaby(baby['stats'])[1] + " and " + assessBaby(baby['stats'])[1] + ". "
+	while (clauseTotalCount < clauseMax):
+		
+		newSentence = ""
+		whichParent = random.randint(0,1)
+				
+		random.shuffle(options[whichParent])
+		if (options[whichParent] == []):
+			print "poop!"
+			clauseTotalCount += 1
+		else:	
+			candidate = options[whichParent].pop()
+			if (candidate == 'likeSimilarity'):
+				check = findSimilarity(baby, relParent[whichParent])
+				if (check == -1):
+					pass
+				else:
+					likeSimilarityDict = {'genre': check[0],
+						'babyFirst': baby['first_name'],
+						'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
+						'specific': check[1],
+						'appreciation': random.choice(['a love of', 'an appreciation for', 'an affection for'])}
+						
+					if (likeSimilarityDict['genre'] == 'education_history'):
+						likeSimilarityDict['genre'] = 'schools'
+						likeSimilarityDict['appreciation'] = 'a diploma from'
+					elif (likeSimilarityDict['genre'] == 'work_history'):
+						likeSimilarityDict['genre'] = 'employment'
+						likeSimilarityDict['appreciation'] = 'a work history at'
+					
+					newSentence = random.choice(likeSimilarityTemplates) % likeSimilarityDict
+					clauseValence = 'positive'
+			elif (candidate == 'likeDifference'):
+				check = findDifference(baby, relParent[whichParent])
+				if (check == -1):
+					template = "%(baby)s would wish that %(parentNameOrRel)s shared more about %(parentHimHer)sself, so %(babyPronoun)s might have something to rebel against"
+					templateDict = {'baby': baby['first_name'],
+						'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
+						'babyPronoun': getPronoun(baby),
+						'parentHimHer': getHimHerIt(relParent[whichParent])}
+					
+					newSentence = template % templateDict
+					clauseValence = 'negative'
+					
+				else:
+					likeDifferenceDict = {'genre': check[0],
+						'babyFirst': baby['first_name'],
+						'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
+						'specific': check[1],
+						'appreciation': random.choice(['love of', 'appreciation for', 'affection for']),
+						'rejectAdj': random.choice(['lame', 'weak', 'unconvincing', 'forced', 'belabored', 'old-timey', 'quaint']),
+						'rejectVerb': random.choice(['reject', 'spurn', 'belittle', 'disdain', 'forswear']) }
+					
+					newSentence = random.choice(likeDifferenceTemplates) % likeDifferenceDict
+					clauseValence = 'negative'
+			#elif (candidate == 'statComparison'):
+			#	workingStat = random.choice('intrigue', 'enthusiasm', 'usefulness', 'privacy', 'literacy')
+			#	diff = statCompare(baby, parent, workingStat)
+				
+				
+				
+				
+				
+				
+				
+				#statComparisonDict = {}
+					
+			if (newSentence):
+				if (clauseTotalCount > 0):
+					if (bio[-2:] == ", "):
+						if (newSentence.split(" ")[0] != baby['first_name']):
+							newSentence = newSentence[0].lower() + newSentence[1:]
+						if (clauseValence != clausePrevValence):
+							newSentence = random.choice(valenceDiff) + " " + newSentence
+						else:
+							newSentence = random.choice(valenceSame) + " " + newSentence
+				
+				bio += newSentence
+				
+				clauseTotalCount += 1
+				clauseParent[whichParent] += 1
+				
+				clauseCurrentLength += 1
+				clausePrevValence = clauseValence
+				clausePrev = newSentence
+				
+				if (clauseCurrentLength > 1):
+					bio += ". "
+					clauseCurrentLength = 0
+				else:
+					if (0):#random.randint(0,1)):
+						bio += ". "
+						clauseCurrentLength = 0
+					else:
+						bio += ", "
+							
+			
+			
+	if (bio[-2:] == ', '):
+		bio = bio[:-2] + '. '
 	
 	if (random.randint(0,1000000) == 999999):
 		bio += "It's a miracle! Baby is genetically immune to the space fungus!"
@@ -560,7 +720,10 @@ if __name__ == '__main__':
 	
 		baby['stats'] = getStats(baby, graphStats)
 		users[genepool[parent1]]['stats'] = getStats(users[genepool[parent1]], graphStats)
-		users[genepool[parent2]]['stats'] = getStats(users[genepool[parent2]], graphStats)	
+		users[genepool[parent2]]['stats'] = getStats(users[genepool[parent2]], graphStats)
+		
+		#for user in users:
+		#	pprint.pprint(users[user])
 	
 		print getBio(baby, users[genepool[parent1]], users[genepool[parent2]])
 		print	
