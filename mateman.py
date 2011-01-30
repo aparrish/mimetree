@@ -3,6 +3,7 @@ import sys
 import pprint
 from statlib import stats
 import random
+import portnameteau
 
 statMinimum = 3
 
@@ -331,7 +332,7 @@ def dictMeld (parent1, parent2, attribute):
 
 def findSimilarity(baby, parent):
 	
-	options = [k for k in baby.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies') and baby[k] and k in parent.keys() and parent[k]]
+	options = [k for k in baby.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies', 'work_history', 'education_history') and baby[k] and k in parent.keys() and parent[k]]
 
 	random.shuffle(options)
 	
@@ -342,9 +343,19 @@ def findSimilarity(baby, parent):
 	
 	while (foundIt == -1):		
 		category = options.pop()
-		candidates = [c for c in baby[category] if c in parent[category]]
+		
+		if (category == 'education_history'):
+			candidates = [c for c in baby[category].keys() if c in parent[category].keys()]
+			
+		else:
+			candidates = [c for c in baby[category] if c in parent[category]]
+		
 		if (len(candidates) > 0):
 			result = [category, random.choice(candidates)]
+		
+			if (category == 'work_history'):
+				result[1] = result[1]['name']
+				
 			return result
 		else:
 			if (len(options) == 0) or (len(candidates) == 0):
@@ -354,7 +365,7 @@ def findSimilarity(baby, parent):
 	
 def findDifference(baby, parent):
 	
-	options = [k for k in parent.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies') and parent[k]]
+	options = [k for k in parent.keys() if k in ('activities', 'interests', 'music', 'books', 'tv', 'movies', 'work_history') and parent[k]]
 
 	random.shuffle(options)
 	
@@ -368,6 +379,9 @@ def findDifference(baby, parent):
 		candidates = [c for c in parent[category] if baby[category] and c not in baby[category]]
 		if (len(candidates) > 0):
 			result = [category, random.choice(candidates)]
+			if (category == 'work_history'):
+				result[1] = result[1]['name']
+			
 			return result
 		else:
 			if (len(options) == 0) or (len(candidates) == 0):
@@ -379,21 +393,18 @@ def findDifference(baby, parent):
 
 def assessBaby(babyStats):
 	
-	descriptors = {'enthusiasm': [['en_low_1', 'en_low_2', 'en_low_3', 'en_low_4', 'en_low_5'],
-			['en_med_1', 'en_med_2', 'en_med_3', 'en_med_4', 'en_med_5'],
-			['en_hi_1', 'en_hi_2', 'en_hi_3', 'en_hi_4', 'en_hi_5']],
-		'intrigue': [['in_low_1', 'in_low_2', 'in_low_3', 'in_low_4', 'in_low_5'],
-			['in_med_1', 'in_med_2', 'in_med_3', 'in_med_4', 'in_med_5'],
-			['in_hi_1', 'in_hi_2', 'in_hi_3', 'in_hi_4', 'in_hi_5']],
-		'literacy': [['li_low_1', 'li_low_2', 'li_low_3', 'li_low_4', 'li_low_5'],
-			['li_med_1', 'li_med_2', 'li_med_3', 'li_med_4', 'li_med_5'],
-			['li_hi_1', 'li_hi_2', 'li_hi_3', 'li_hi_4', 'li_hi_5']],
-		'usefulness': [['us_low_1', 'us_low_2', 'us_low_3', 'us_low_4', 'us_low_5'],
-			['us_med_1', 'us_med_2', 'us_med_3', 'us_med_4', 'us_med_5'],
-			['us_hi_1', 'us_hi_2', 'us_hi_3', 'us_hi_4', 'us_hi_5']],
-		'privacy': [['pr_low_1', 'pr_low_2', 'pr_low_3', 'pr_low_4', 'pr_low_5'],
-			['pr_med_1', 'pr_med_2', 'pr_med_3', 'pr_med_4', 'pr_med_5'],
-			['pr_hi_1', 'pr_hi_2', 'pr_hi_3', 'pr_hi_4', 'pr_hi_5']]}
+	descriptors = {'enthusiasm': [['apathetic', 'disinterested', 'indifferent', 'lethargic', 'lazy'],
+			['outgoing', 'ardent', 'exuberant', 'spirited', 'ebullient']],
+		'intrigue': [['boring', 'dull', 'uninteresting', 'wearisome', 'tedious'],
+			['captivating', 'enchanting', 'fascinating', 'compelling', 'magnetic']],
+		'literacy': [['ignorant', 'cretinous', 'moronic', 'imbecilic', 'oblivious'],
+			['erudite', 'well-read', 'cultured', 'scholarly', 'sophisticated']],
+		'usefulness': [['clumsy', 'incompetent', 'unskilled', 'ponderous', 'bungling'],
+			['capable', 'skillful', 'well-qualified', 'proficient', 'accomplished']],
+		'privacy': [['forthright', 'honest', 'open', 'aboveboard', 'trusting'],
+			['secretive', 'furtive', 'reticent', 'cryptic', 'withdrawn']]}
+	
+	middlers = ['middlingly', 'just-shy-of-', 'nearly ', 'almost-', 'in-the-ballpark-of-', 'practically ', 'virtually ', 'within-shouting-distance-of-', 'approaching ', 'not-quite-']
 	
 	stat = random.choice(descriptors.keys())
 		
@@ -405,16 +416,20 @@ def assessBaby(babyStats):
 				check = [0]
 			check.append(random.choice(descriptors[stat][0]))
 			return check
+		elif (babyStats[stat] < 11):
+			check = [1]
+			check.append(random.choice(middlers) + random.choice(descriptors[stat][0]))
+			return check
 		elif (babyStats[stat] < 14):
 			check = [1]
-			check.append(random.choice(descriptors[stat][1]))
+			check.append(random.choice(middlers) + random.choice(descriptors[stat][1]))
 			return check
 		else:
 			if (stat == 'privacy'):
 				check = [0]
 			else:
 				check = [2]
-			check.append(random.choice(descriptors[stat][2]))
+			check.append(random.choice(descriptors[stat][1]))
 			return check	
 	else:
 		return -1
@@ -425,19 +440,18 @@ def assessBaby(babyStats):
 					
 
 def makeBaby(parent1, parent2):
-	pprint.pprint(parent1)
-	print
-	pprint.pprint(parent2)
-	print
-
-	
-	print parent1['first_name']
-	print parent2['first_name']
 	
 	baby = dict()
 	
-	baby['first_name'] = "Prototype"
-	baby['last_name'] = coinFlip(parent1, parent2, 'last_name')
+	baby['first_name'] = portnameteau.portnameteau([parent1['first_name'], parent2['first_name']])
+	
+	surnameType = random.randint(0,2)
+	if (surnameType == 0):
+		baby['last_name'] = coinFlip(parent1, parent2, 'last_name')
+	elif (surnameType == 1):
+		baby['last_name'] = parent1['last_name'] + "-" + parent2['last_name']
+	else:
+		baby['last_name'] = portnameteau.portnameteau([parent1['last_name'], parent2['last_name']])
 	
 	if (random.randint(0,1) == 0):
 		baby['sex'] = 'female'
@@ -519,29 +533,37 @@ def getBio(baby, parent1, parent2):
 
 if __name__ == '__main__':
 
+	trials = 20
+	
 	soup = BeautifulStoneSoup(open(sys.argv[1]).read())
 	users = parse_soup(soup)
 	
-	parent2 = -1
-	
-	parent1 = random.randint(0, len(users) - 1)
-	
-	while (parent2 == -1):
-		parent2 = random.randint(0, len(users) - 1)
-		if (parent2 == parent1):
-			parent2 = -1
-
 	genepool = users.keys()
-	
-	baby = makeBaby(users[genepool[parent1]], users[genepool[parent2]])
-	
 	graphStats = crunchNumbers(users)
+		
 	
-	baby['stats'] = getStats(baby, graphStats)
-	users[genepool[parent1]]['stats'] = getStats(users[genepool[parent1]], graphStats)
-	users[genepool[parent2]]['stats'] = getStats(users[genepool[parent2]], graphStats)	
+	for x in range(trials):
+		parent2 = -1
 	
-	print getBio(baby, users[genepool[parent1]], users[genepool[parent2]])
+		parent1 = random.randint(0, len(users) - 1)
+	
+		while (parent2 == -1):
+			parent2 = random.randint(0, len(users) - 1)
+			if (parent2 == parent1):
+				parent2 = -1
+
+	
+	
+		baby = makeBaby(users[genepool[parent1]], users[genepool[parent2]])
+	
+
+	
+		baby['stats'] = getStats(baby, graphStats)
+		users[genepool[parent1]]['stats'] = getStats(users[genepool[parent1]], graphStats)
+		users[genepool[parent2]]['stats'] = getStats(users[genepool[parent2]], graphStats)	
+	
+		print getBio(baby, users[genepool[parent1]], users[genepool[parent2]])
+		print	
 	
 	
 	
