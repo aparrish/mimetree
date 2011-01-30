@@ -4,7 +4,7 @@ window.onload = function(){
 			
 			for(var i=0;i<datadata.length;i++){
 			var data = datadata[i];
-			console.log(data);
+			//console.log(data);
 var dataString ='';
 dataString+='<div id="BreedResults">';
 dataString+='<div class="BabyName"><p>'+data["baby"]["first_name"]+' '+data["baby"]["last_name"]+'</p></div>			<div id="BabyContainer">';
