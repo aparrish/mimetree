@@ -511,7 +511,7 @@ function updateStats(uID,fullName,infoNum){
 }
 
 function AddAirline(a,b,c)  {
-	$('<img src="http://graph.facebook.com/'+a+'/picture" class="DragBox" id="Item'+b+'" overclass="OverDragBox" dragclass="DragDragBox" uID="'+a+'" fullName="'+c+'">').appendTo("#DragContainer1");
+	$('<img src="http://graph.facebook.com/'+a+'/picture" class="DragBox" id="Item'+b+'" overclass="OverDragBox" dragclass="DragDragBox" uID="'+a+'" title="'+c+'" fullName="'+c+'">').appendTo("#DragContainer1");
 	return false;
 } 
 
