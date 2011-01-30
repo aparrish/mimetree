@@ -585,7 +585,7 @@ def getBio(baby, parent1, parent2):
 	options = [['likeSimilarity', 'likeDifference', 'statComparison'], ['likeSimilarity', 'likeDifference', 'statComparison']]
 			
 	clauseTotalCount = 0
-	clauseMax = 2
+	clauseMax = 3
 	clauseParent = [0, 0]
 	clausePrev = ''
 	clauseValence = ''
@@ -598,7 +598,8 @@ def getBio(baby, parent1, parent2):
 	valenceSame = ['and']
 	valenceDiff = ['though', 'but', 'however,']
 		
-	likeSimilarityTemplates = ["When it comes to %(genre)s, %(babyFirst)s and %(parentNameOrRel)s would share %(appreciation)s %(specific)s"]
+	likeSimilarityTemplates = ["When it comes to %(genre)s, %(babyFirst)s and %(parentNameOrRel)s would share %(appreciation)s %(specific)s",
+		"Sometimes %(babyFirst)s would whisper to %(parentNameOrRel)s, '%(endearment)s,' and give %(parentNameOrRel)s a %(specific)s %(mediaObject)s"]
 	
 	likeDifferenceTemplates = ["%(babyFirst)s would %(rejectVerb)s %(parentNameOrRel)s's %(rejectAdj)s %(appreciation)s %(specific)s",
 		"%(babyFirst)s and %(parentNameOrRel)s would often fight about %(genre)s, with %(babyFirst)s screaming '%(specific)s %(isAre)s %(garbage)s!' and %(parentNameOrRel)s responding, 'I am %(parentFullName)s and you do not talk to me that way!'"]
@@ -622,11 +623,13 @@ def getBio(baby, parent1, parent2):
 				if (check == -1):
 					pass
 				else:
+					mediaDict = {'music': 'album', 'tv': 'DVD', 'movies': 'DVD', 'books': 'hardcover'}
 					likeSimilarityDict = {'genre': check[0],
 						'babyFirst': baby['first_name'],
 						'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
 						'specific': check[1],
-						'appreciation': random.choice(['a love of', 'an appreciation for', 'an affection for'])}
+						'appreciation': random.choice(['a love of', 'an appreciation for', 'an affection for']),
+						'endearment': random.choice(['I love you', 'Appreciate life', 'Thank you for making me'])}
 						
 					if (likeSimilarityDict['genre'] == 'education_history'):
 						likeSimilarityDict['genre'] = 'schools'
@@ -635,7 +638,13 @@ def getBio(baby, parent1, parent2):
 						likeSimilarityDict['genre'] = 'employment'
 						likeSimilarityDict['appreciation'] = 'a work history at'
 					
-					newSentence = random.choice(likeSimilarityTemplates) % likeSimilarityDict
+					#print check[0]
+					if ((check[0] == 'education_history') or (check[0] == 'work_history') or (check[0] == 'activities') or (check[0] == 'interests')):
+						#print "foo"
+						newSentence = likeSimilarityTemplates[0] % likeSimilarityDict
+					else:
+						likeSimilarityDict['mediaObject'] = mediaDict[check[0]]
+						newSentence = random.choice(likeSimilarityTemplates) % likeSimilarityDict
 					clauseValence = 'positive'
 			elif (candidate == 'likeDifference'):
 				check = findDifference(baby, relParent[whichParent])
@@ -783,18 +792,22 @@ def getBio(baby, parent1, parent2):
 		bio = bio[:-2] + '. '
 	
 	if (random.randint(0,1000000) == 999999):
-		bio += "It's a miracle! Baby is genetically immune to the space fungus!"
+		newSentence = "It's a miracle! " + baby['first_name'] + " would be genetically immune to the space fungus! Humanity is saved, and more importantly, " + getPossessive(baby) + " parents will be so proud!"
 	else:
 		
-#		if (totalValence < 0):
-#			templates = ["It should come as no surprise that %(baby)s is not genetically immune to the space fungus.",
-#				"In addition to being an emotional drain on %(babyHisHer)s family, %(baby)s is not genetically immune to the space fungus."]
-#		else:
-#			templates = ["%(positiveJudgment)s %(baby)s is not genetically immune to the space fungus."]
-#		
-#		summaryDict = {'negativeJudgment': random.choice("It should come as no surprise that", "In addition to being a drain on ")}
+		if (totalValence < 0):
+			templates = ["It should come as no surprise that %(baby)s would not be genetically immune to the space fungus.",
+				"In addition to being an emotional drain on %(babyHisHer)s family, %(baby)s would not be genetically immune to the space fungus."]
+		else:
+			templates = ["Though %(baby)s would a credit to %(babyHisHer)s family, %(babyPronoun)s would not be genetically immune to the space fungus."]
 		
-		bio += "It should come as no surprise that " + baby['first_name'] + " is not genetically immune to the space fungus."
+		summaryDict = {'baby': random.choice([baby['first_name'], "this child"]),
+			'babyHisHer': getPossessive(baby),
+			'babyPronoun': getPronoun(baby)}
+		
+		newSentence = random.choice(templates) % summaryDict
+		
+	bio += newSentence
 
 #	print "total valence: " + str(totalValence)
 
