@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>MimeTree</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="{{ static_url("mimetree.js") }}"></script>
+    
+  <link href='http://fonts.googleapis.com/css?family=Lato:100,regular,bold' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="{{ static_url("style.css") }}" type="text/css"/>
+	<style>
+	<!--
+	.BabyContainer img {
+  position: absolute;
+} 
+
+.BabyData {
+	width:430px;
+	float:left;
+}
+
+.BabyName {
+	font-weight:bold;
+	font-size:20px;
+	line-height:80%;
+	text-align:center;
+}
+
+.BabyDesc {
+	padding-left:3px;
+	background: url(../static/images/bg1.png);
+}
+-->
+</style>
+</head>
+<body>
+
+<!--  BEGIN CONTAINER DIV  -->
+<div id="container">
+	<div id="BreedResults">
+			<div id="BabyName">Last Baby Standing</div>
+			<div id="BabyContainer"><img style="background:#fff" src="../static/images/imgtest.png"></div>
+			<div class="BabyData">
+				<br>
+				<div id="BabyDesc">
+					<p style="padding-left:3px">The fate of the world is in your hands, and your friends' loins!</p>
+				</div>
+				<div class="clear"></div>
+				<br>
+				<div id="BabyStats" style="padding-bottom:0px">
+					<br>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+</div>
