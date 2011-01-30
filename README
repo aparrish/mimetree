@@ -19,3 +19,9 @@ cache facebook data.) the program runs with sensible defaults, but you can
 override the redis host and port with the --redis_host and --redis_port
 parameters.
 
+dependencies:
+	- beautifulsoup 3.2
+	- tornado (fresh from repository)
+	- python statlib
+	- redis
+
