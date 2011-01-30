@@ -40,6 +40,7 @@ define("facebook_api_key", help="your Facebook application API key")
 define("facebook_secret", help="your Facebook application secret")
 define("redis_host", help="hostname for redis", default="localhost", type=str)
 define("redis_port", help="port number for redis", default=6379, type=int)
+define("baseurl", help="external base url app is running as (for appropriate redirect after auth)", type=str)
 
 class Application(tornado.web.Application):
 	def __init__(self):
@@ -108,8 +109,8 @@ class BaseHandler(tornado.web.RequestHandler):
 		else:
 			logging.info('graph stats cache miss')
 			friend_stats = self.get_graph_data()
-			friend_data = friend_stats
-			crunched = mateman.crunchNumbers(friend_data)
+			logging.error(friend_stats)
+			crunched = mateman.crunchNumbers(friend_stats)
 			r.setex(key, json.dumps(crunched), 86400)
 			return crunched
 
@@ -133,8 +134,8 @@ class StatsHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 		if fbid:
 			if fbid not in friends:
 				raise tornado.web.HTTPError(404)
-			logging.info("user: %s" % str(friends[fbid]))
-			logging.info("stats: %s (%s)" % (str(stats), str(type(stats))))
+			logging.error("user: %s" % str(friends[fbid]))
+			logging.error("stats: %s (%s)" % (str(stats), str(type(stats))))
 			self.set_header('Content-Type', 'application/json')
 			self.write(json.dumps(mateman.getStats(friends[fbid], stats)))
 		else:
@@ -252,15 +253,19 @@ class FriendsJSONHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 class AuthLoginHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.asynchronous
 	def get(self):
+		if options.baseurl:
+			redirect_uri = options.baseurl + '/auth/login'
+		else:
+			redirect_uri = 'http://resolution.decontextualize.com:%d/auth/login' % options.port
 		if self.get_argument("code", False):
 			self.get_authenticated_user(
-				redirect_uri='http://resolution.decontextualize.com:%d/auth/login' % options.port,
+				redirect_uri=redirect_uri,
 				client_id=self.settings["facebook_api_key"],
 				client_secret=self.settings["facebook_secret"],
 				code=self.get_argument("code"),
 				callback=self.async_callback(self._on_login))
 			return
-		self.authorize_redirect(redirect_uri='http://resolution.decontextualize.com:%d/auth/login' % options.port,
+		self.authorize_redirect(redirect_uri=redirect_uri,
 			client_id=self.settings["facebook_api_key"],
 			extra_params={"scope": "user_about_me,user_education_history,user_location,email,friends_about_me,friends_activities,friends_birthday,friends_education_history,friends_events,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location,friends_relationships,friends_relationship_details,friends_religion_politics,friends_status,friends_website,friends_work_history,user_about_me,user_activities,user_birthday,user_education_history,user_events,user_groups,user_hometown,user_interests,user_likes,user_location,user_relationships,user_relationship_details,user_religion_politics,user_status,user_website,user_work_history"})
 
