@@ -198,11 +198,11 @@ def layer_images_for_baby(baby):
 
 	# enthusiasm (sic)
 	if baby['stats']['enthusiasm'] < 9:
-		images.append('2_Enthusiasm _FACE/low/%s.png' % baby['sex'])
+		images.append('2_Enthusiasm_FACE/low/%s.png' % baby['sex'])
 	elif baby['stats']['enthusiasm'] < 14:
-		images.append('2_Enthusiasm _FACE/medium/%s.png' % baby['sex'])
+		images.append('2_Enthusiasm_FACE/medium/%s.png' % baby['sex'])
 	else:
-		images.append('2_Enthusiasm _FACE/high/%s.png' % baby['sex'])
+		images.append('2_Enthusiasm_FACE/high/%s.png' % baby['sex'])
 
 	images.append('1_Proficiency_FG/hand.png')
 	images.append('1_Proficiency_FG/%s.png' % (baby['stats']['proficiency'].lower()))
