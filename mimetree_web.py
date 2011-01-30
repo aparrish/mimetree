@@ -45,6 +45,7 @@ class Application(tornado.web.Application):
 	def __init__(self):
 		handlers = [
 			(r"/", MainHandler),
+			(r"/babies.html", BabiesPageHandler),
 			(r"/friends.json", FriendsJSONHandler),			
 			(r"/auth/login", AuthLoginHandler),
 			(r"/stats.json", StatsHandler),
@@ -117,6 +118,11 @@ class MainHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	def get(self):
 		logging.info(str(self.current_user))
 		self.render("index.html")
+
+class BabiesPageHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
+	@tornado.web.authenticated
+	def get(self):
+		self.render("babies.html")
 
 class StatsHandler(BaseHandler, tornado.auth.FacebookGraphMixin):
 	@tornado.web.authenticated
