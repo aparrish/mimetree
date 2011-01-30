@@ -258,21 +258,32 @@ def crunchNumbers(users):
 	
 	graphStats['interests'] = {}
 	graphStats['interests']['mean'] = stats.mean(nonzeroInterest)
-	graphStats['interests']['stdev'] = stats.stdev(nonzeroInterest)
+	if (len(nonzeroInterest) < 2):
+		graphStats['interests']['stdev'] = 0
+	else:
+		graphStats['interests']['stdev'] = stats.stdev(nonzeroInterest)
+
 
 	#stats for activities
 	nonzeroActivities = [item for item in activityCounts if item != 0]
 
 	graphStats['activities'] = {}
 	graphStats['activities']['mean'] = stats.mean(nonzeroActivities)
-	graphStats['activities']['stdev'] = stats.stdev(nonzeroActivities)
+	if (len(nonzeroActivities) < 2):
+		graphStats['activities']['stdev'] = 0
+	else:
+		graphStats['activities']['stdev'] = stats.stdev(nonzeroActivities)
 
 	#stats for media
 	nonzeroMedia = [item for item in mediaCounts if item != 0]
 
 	graphStats['media'] = {}
 	graphStats['media']['mean'] = stats.mean(nonzeroMedia)
-	graphStats['media']['stdev'] = stats.stdev(nonzeroMedia)
+	if (len(nonzeroMedia) < 2):
+		graphStats['media']['stdev'] = 0
+	else:
+		graphStats['media']['stdev'] = stats.stdev(nonzeroMedia)
+
 	
 	#stats for work/education
 
@@ -280,7 +291,11 @@ def crunchNumbers(users):
 	
 	graphStats['useful'] = {}
 	graphStats['useful']['mean'] = stats.mean(nonzeroUseful)
-	graphStats['useful']['stdev'] = stats.stdev(nonzeroUseful)
+	if (len(nonzeroUseful) < 2):
+		graphStats['useful']['stdev'] = 0
+	else:
+		graphStats['useful']['stdev'] = stats.stdev(nonzeroUseful)
+
 
 	#stats for totals
 
@@ -288,7 +303,11 @@ def crunchNumbers(users):
 
 	graphStats['totals'] = {}
 	graphStats['totals']['mean'] = stats.mean(nonzeroTotals)
-	graphStats['totals']['stdev'] = stats.stdev(nonzeroTotals)
+	if (len(nonzeroTotals) < 2):
+		graphStats['totals']['stdev'] = 0
+	else:
+		graphStats['totals']['stdev'] = stats.stdev(nonzeroTotals)
+
 
 	return graphStats
 
@@ -378,7 +397,8 @@ def findDifference(baby, parent):
 	while (foundIt == -1):		
 		category = options.pop()
 		if (category == 'work_history'):
-			print "workhist?"
+			pass
+			#print "workhist?"
 		candidates = [c for c in parent[category] if baby[category] and c not in baby[category]]
 		if (len(candidates) > 0):
 			result = [category, random.choice(candidates)]
@@ -397,15 +417,15 @@ def findDifference(baby, parent):
 def assessBaby(babyStats, stat = ""):
 	
 	descriptors = {'enthusiasm': [['apathetic', 'disinterested', 'indifferent', 'lethargic', 'lazy'],
-			['outgoing', 'ardent', 'exuberant', 'spirited', 'ebullient', 'enthusiastic']],
+			['outgoing', 'ardent', 'exuberant', 'spirited', 'ebullient']],
 		'intrigue': [['boring', 'dull', 'uninteresting', 'wearisome', 'tedious'],
-			['captivating', 'enchanting', 'fascinating', 'compelling', 'magnetic', 'intriguing']],
+			['captivating', 'enchanting', 'fascinating', 'compelling', 'magnetic']],
 		'literacy': [['ignorant', 'cretinous', 'moronic', 'imbecilic', 'oblivious'],
-			['erudite', 'well-read', 'cultured', 'scholarly', 'sophisticated', 'literate']],
+			['erudite', 'well-read', 'cultured', 'scholarly', 'sophisticated']],
 		'usefulness': [['clumsy', 'incompetent', 'unskilled', 'ponderous', 'bungling'],
-			['capable', 'skillful', 'well-qualified', 'proficient', 'accomplished', 'useful']],
+			['capable', 'skillful', 'well-qualified', 'proficient', 'accomplished']],
 		'privacy': [['forthright', 'honest', 'open', 'aboveboard', 'trusting'],
-			['secretive', 'furtive', 'reticent', 'cryptic', 'withdrawn', 'private']]}
+			['secretive', 'furtive', 'reticent', 'cryptic', 'withdrawn']]}
 	
 	middlers = ['middlingly', 'just-shy-of-', 'nearly ', 'almost-', 'in-the-ballpark-of-', 'practically ', 'virtually ', 'within-shouting-distance-of-', 'approaching ', 'not-quite-']
 	
@@ -493,6 +513,9 @@ def getPossessive(baby):
 		return 'her'
 		
 def getHimHerIt(baby):
+	if not (baby['sex']):
+		return 'them'
+		
 	if (baby['sex'] == 'male'):
 		return 'him'
 	elif (baby['sex'] == 'female'):
@@ -507,7 +530,13 @@ def getPronoun(baby):
 	else:
 		return 'she'
 		
-def getNameOrRel(baby, parent):
+def getNameOrRel(baby, parent, other = 0):
+	if (other):
+		if (random.randint(0,1)):
+			return parent['first_name']
+		else:
+			return getPossessive(baby) + " other parent"
+	
 	if (parent['sex'] == ""):
 		return parent['first_name']
 	else:		
@@ -553,21 +582,15 @@ def getBio(baby, parent1, parent2):
 	
 	# relationship builder
 	
-	options = [['likeSimilarity', 'likeDifference', 'statComparison', 'profSimilarity', 'profDifference'], 
-		['likeSimilarity', 'likeDifference', 'statComparison', 'profSimilarity', 'profDifference']]
-		
-	statComparisonTemplates = []
-		
-	profSimilarityTemplates = []
-	
-	profDifferenceTemplates = []
-	
+	options = [['likeSimilarity', 'likeDifference', 'statComparison'], ['likeSimilarity', 'likeDifference', 'statComparison']]
+			
 	clauseTotalCount = 0
-	clauseMax = 3
+	clauseMax = 2
 	clauseParent = [0, 0]
 	clausePrev = ''
 	clauseValence = ''
 	clausePrevValence = ''
+	totalValence = 0
 	clauseCurrentLength = 0
 	
 	relParent = [parent1, parent2]
@@ -577,17 +600,20 @@ def getBio(baby, parent1, parent2):
 		
 	likeSimilarityTemplates = ["When it comes to %(genre)s, %(babyFirst)s and %(parentNameOrRel)s would share %(appreciation)s %(specific)s"]
 	
-	likeDifferenceTemplates = ["%(babyFirst)s would %(rejectVerb)s %(parentNameOrRel)s's %(rejectAdj)s %(appreciation)s %(specific)s"]
+	likeDifferenceTemplates = ["%(babyFirst)s would %(rejectVerb)s %(parentNameOrRel)s's %(rejectAdj)s %(appreciation)s %(specific)s",
+		"%(babyFirst)s and %(parentNameOrRel)s would often fight about %(genre)s, with %(babyFirst)s screaming '%(specific)s %(isAre)s %(garbage)s!' and %(parentNameOrRel)s responding, 'I am %(parentFullName)s and you do not talk to me that way!'"]
 
+
+	rebelUsed = 0
 	
 	while (clauseTotalCount < clauseMax):
 		
 		newSentence = ""
 		whichParent = random.randint(0,1)
 				
-		random.shuffle(options[whichParent])
+		candidate = random.shuffle(options[whichParent])
 		if (options[whichParent] == []):
-			print "poop!"
+			#print "poop!"
 			clauseTotalCount += 1
 		else:	
 			candidate = options[whichParent].pop()
@@ -614,37 +640,105 @@ def getBio(baby, parent1, parent2):
 			elif (candidate == 'likeDifference'):
 				check = findDifference(baby, relParent[whichParent])
 				if (check == -1):
-					template = "%(baby)s would wish that %(parentNameOrRel)s shared more about %(parentHimHer)sself, so %(babyPronoun)s might have something to rebel against"
-					templateDict = {'baby': baby['first_name'],
-						'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
-						'babyPronoun': getPronoun(baby),
-						'parentHimHer': getHimHerIt(relParent[whichParent])}
+					if not (rebelUsed):
+						template = ["%(baby)s would wish that %(parentNameOrRel)s shared more about %(parentHimHer)sself, so %(babyPronoun)s might have something to rebel against",
+							"%(baby)s would resent %(parentNameOrRel)s's privacy",
+							"%(baby)s would often wonder what %(parentNameOrRel)s wasn't sharing about %(parentHimHer)sself",
+							"%(baby)s would remark later in life that %(parentNameOrRel)s had always been an enigma",
+							"%(baby)s would never feel like %(parentNameOrRel)s shared enough of %(parentHimHer)sself"]
+							
+						templateDict = {'baby': baby['first_name'],
+							'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
+							'babyPronoun': getPronoun(baby),
+							'parentHimHer': getHimHerIt(relParent[whichParent])}
 					
-					newSentence = template % templateDict
-					clauseValence = 'negative'
-					
+						newSentence = random.choice(template) % templateDict
+						clauseValence = 'negative'
+						rebelUsed = 1
+					else:
+						pass
 				else:
+					if (check[1][-1] == 's'):
+						isAre1 = 'are'
+					else:
+						isAre1 = 'is'
+					
 					likeDifferenceDict = {'genre': check[0],
 						'babyFirst': baby['first_name'],
 						'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
+						'parentFullName': relParent[whichParent]['first_name'] + " " + relParent[whichParent]['last_name'],
 						'specific': check[1],
+						'isAre': isAre1,
 						'appreciation': random.choice(['love of', 'appreciation for', 'affection for']),
+						'garbage': random.choice(['worthless', 'garbage', 'terrible', 'an atrocity', 'horrible', 'appalling', 'ghastly']),
 						'rejectAdj': random.choice(['lame', 'weak', 'unconvincing', 'forced', 'belabored', 'old-timey', 'quaint']),
 						'rejectVerb': random.choice(['reject', 'spurn', 'belittle', 'disdain', 'forswear']) }
 					
 					newSentence = random.choice(likeDifferenceTemplates) % likeDifferenceDict
 					clauseValence = 'negative'
-			#elif (candidate == 'statComparison'):
-			#	workingStat = random.choice('intrigue', 'enthusiasm', 'usefulness', 'privacy', 'literacy')
-			#	diff = statCompare(baby, parent, workingStat)
+			elif (candidate == 'statComparison'):
+				options[abs(whichParent-1)].remove('statComparison')
+	
+				workingStat = random.choice(['intrigue', 'enthusiasm', 'usefulness', 'privacy', 'literacy'])
+				converter = {'intrigue': ['intriguing', 'unintriguing'], 
+					'enthusiasm': ['enthusiastic', 'unenthusiastic'],
+					'usefulness': ['useful', 'useless'], 
+					'privacy': ['private', 'public'],
+					'literacy': ['literate', 'illiterate']}
+				
+				diff = statCompare(baby, relParent[whichParent], workingStat)
+				
+				templates = ["%(baby)s %(degree)s %(trait)s %(thanAs)s %(parentNameOrRel)s, who was well-known to be %(descriptor)s",
+					"%(baby)s %(degree)s %(trait)s %(thanAs)s %(parentNameOrRel)s, thanks to the %(otherParentTrait)s influence of %(otherParent)s"]
+				
+				if (diff < -4):
+					degree1 = random.choice(["would be far less", "would be significantly less", "wouldn't be nearly as"])
+				elif (diff < 0):
+					degree1 = random.choice(["would be slightly less", "wouldn't be quite as"])
+				elif (diff == 0):
+					degree1 = random.choice(["would be exactly as", "would be every bit as"])
+				elif (diff < 4):
+					degree1 = random.choice(["would be slightly more", "would be somewhat more"])
+				elif (diff >= 4):
+					degree1 = random.choice(["would be significantly more", "would be far more", "would be radically more"])
+				
+				if (relParent[whichParent]['stats'][workingStat] < 10):
+					trait1 = converter[workingStat][1]
+					if (diff <= 0):
+						clauseValence = 'negative'
+					else:
+						clauseValence = 'positive'
+				else:
+					trait1 = converter[workingStat][0]
+					if (diff < 0):
+						clauseValence = 'negative'
+					else:
+						clauseValence = 'positive'	
+				
+				if (workingStat == 'privacy'):
+					if (clauseValence == 'positive'):
+						clauseValence = 'negative'
+					else:
+						clauseValence = 'positive'
+					
+				if (degree1.split(" ")[-1] == "as"):
+					thanAs1 = "as"
+				else:
+					thanAs1 = "than"
+							
+				statDict = {'baby': baby['first_name'],
+					'degree': degree1,
+					'trait': trait1,
+					'thanAs': thanAs1,
+					'parentNameOrRel': getNameOrRel(baby, relParent[whichParent]),
+					'descriptor': assessBaby(baby['stats'], workingStat)[1],
+					'otherParentTrait': assessBaby(relParent[abs(whichParent-1)]['stats'], workingStat)[1],
+					'otherParent': getNameOrRel(baby, relParent[abs(whichParent-1)])}
+				
+				newSentence = random.choice(templates) % statDict
 				
 				
 				
-				
-				
-				
-				
-				#statComparisonDict = {}
 					
 			if (newSentence):
 				if (clauseTotalCount > 0):
@@ -665,8 +759,16 @@ def getBio(baby, parent1, parent2):
 				clausePrevValence = clauseValence
 				clausePrev = newSentence
 				
-				if (clauseCurrentLength > 1):
-					bio += ". "
+				if (clauseValence == 'positive'):
+					totalValence += 1
+				else:
+					totalValence -= 1
+				
+				if (clauseCurrentLength > 1) or (',' in newSentence):
+					if not (bio[-2:] == "!'"):
+						bio += ". "
+					else:
+						bio += " "
 					clauseCurrentLength = 0
 				else:
 					if (0):#random.randint(0,1)):
@@ -683,8 +785,19 @@ def getBio(baby, parent1, parent2):
 	if (random.randint(0,1000000) == 999999):
 		bio += "It's a miracle! Baby is genetically immune to the space fungus!"
 	else:
+		
+#		if (totalValence < 0):
+#			templates = ["It should come as no surprise that %(baby)s is not genetically immune to the space fungus.",
+#				"In addition to being an emotional drain on %(babyHisHer)s family, %(baby)s is not genetically immune to the space fungus."]
+#		else:
+#			templates = ["%(positiveJudgment)s %(baby)s is not genetically immune to the space fungus."]
+#		
+#		summaryDict = {'negativeJudgment': random.choice("It should come as no surprise that", "In addition to being a drain on ")}
+		
 		bio += "It should come as no surprise that " + baby['first_name'] + " is not genetically immune to the space fungus."
-	
+
+#	print "total valence: " + str(totalValence)
+
 	return bio
 	
 	
