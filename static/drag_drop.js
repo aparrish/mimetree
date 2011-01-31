@@ -248,9 +248,9 @@ function mouseMove(ev){
 		// If we get in here we are dragging something
 		if(curTarget){
 			// move our helper div to wherever the mouse is (adjusted by mouseOffset)
-			dragHelper.style.top  = mousePos.y - mouseOffset.y;
-			dragHelper.style.left = mousePos.x - mouseOffset.x;
-
+			dragHelper.style.top  = (mousePos.y - mouseOffset.y)+'px';
+			dragHelper.style.left = (mousePos.x - mouseOffset.x)+'px';
+			//console.log(dragHelper.style.top);
 			var dragConts  = DragDrops[curTarget.getAttribute('DragObj')];
 			var activeCont = null;
 			var activeContNum = null;
@@ -305,21 +305,18 @@ function mouseMove(ev){
 				// the item being dragged belongs before another item
 				if(beforeNode){
 					if(beforeNode!=curTarget.nextSibling){
-						//if its in one the target containers and they're not empty, swap contents else append
-						if(activeContNum > 0 && activeCont.childNodes.length > 0){
-								rootParent.appendChild(activeCont.childNodes[0]);
-						}
 						activeCont.insertBefore(curTarget, beforeNode);
 					}
 
 				// the item being dragged belongs at the end of the current container
 				} else {
 					if((curTarget.nextSibling) || (curTarget.parentNode!=activeCont)){
-						//if its in one the target containers and they're not empty, swap contents else append
-						if(activeContNum > 0 && activeCont.childNodes.length > 0){
-								rootParent.appendChild(activeCont.childNodes[0]);
-						}
-							activeCont.appendChild(curTarget);
+						//if its in one the target containers and they're not empty pop it in before anyway
+						// just so the user knows its gonna pop out
+							if(activeContNum > 0 && activeCont.childNodes.length > 0)
+								activeCont.insertBefore(curTarget, beforeNode);
+							else
+								activeCont.appendChild(curTarget);
 					}
 				}
 
@@ -377,13 +374,26 @@ function mouseUp(ev){
 					rootParent.insertBefore(curTarget, rootSibling);
 				} else {
 					rootParent.appendChild(curTarget);
-					
 				}
 			}else{
 				//console.debug(curTarget);
 				
 				//console.debug(DragDrops[0][0]);
 				//alert(DragDrops[0][1].childNodes.length);
+				if(DragDrops[0][1].childNodes.length > 1){
+					DragDrops[0][0].appendChild(DragDrops[0][1].childNodes[1]);
+				}
+				if(DragDrops[0][2].childNodes.length > 1){
+					DragDrops[0][0].appendChild(DragDrops[0][2].childNodes[1]);
+				}
+				if(DragDrops[0][1].childNodes.length == 0){
+					$("#Name1").empty();
+					$("#Info1").empty();
+				}
+				if(DragDrops[0][2].childNodes.length == 0){
+					$("#Name2").empty();
+					$("#Info2").empty();
+				}
 				if(DragDrops[0][1].childNodes.length > 0){
 					var uID = $(DragDrops[0][1].childNodes[0]).attr('uID');
 					var fullName = $(DragDrops[0][1].childNodes[0]).attr('fullName');
@@ -584,7 +594,7 @@ window.onload = function(){
 			
 			CreateDragContainer(document.getElementById('DragContainer1'), document.getElementById('DragContainer2'), document.getElementById('DragContainer3'));
 			dragHelper = document.createElement('DIV');
-			dragHelper.style.cssText = 'position:absolute;display:none;';
+			dragHelper.style.cssText = 'position:absolute;display:none;top:0;left:0';
 
 			document.body.appendChild(dragHelper);
 		});
